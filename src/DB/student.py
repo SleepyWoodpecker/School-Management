@@ -8,4 +8,4 @@ class Student(Base, table=True):
     teacher_id: int = Field(foreign_key="teacher.id")
 
     def __repr__(self) -> str:
-        return f"Student(id={self.id!r}, name={self.name!r})"
+        return f"Student(id={self.id!r}, name={self.name!r}, teacher_id={self.teacher_id!r})"

@@ -13,4 +13,4 @@ class Course_Record(Base, table=True):
     gpa: Optional[float] = Field(default=None)
 
     def __repr__(self) -> str:
-        return f"CourseRecord(student_id={self.student_id!r}, teacher_id={self.teacher_id}, start_date={self.start_date}, grade={self.grade}, gpa={self.gpa})"
+        return f"CourseRecord(student_id={self.student_id!r}, start_date={self.start_date!r}, grade={self.grade!r}, gpa={self.gpa!r})"
