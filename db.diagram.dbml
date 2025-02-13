@@ -9,15 +9,12 @@ Table teacher {
 }
 
 Table course_record {
+  id int [pk]
   student_id int
   teacher_id int 
   start_date timestamp // basically what helps you to track the semester count
   grade float 
-  GPA float
-
-  indexes {
-    (student_id, teacher_id, start_date) [pk] // composite primary key
-  }
+  gpa float
 }
 
 Ref: student.id < course_record.student_id
