@@ -1,0 +1,24 @@
+Table student {
+  id int [pk]
+  name varchar [not null]
+}
+
+Table teacher {
+  id int [pk]
+  name varchar [not null]
+}
+
+Table course_record {
+  student_id int
+  teacher_id int 
+  start_date timestamp // basically what helps you to track the semester count
+  grade float 
+  GPA float
+
+  indexes {
+    (student_id, teacher_id, start_date) [pk] // composite primary key
+  }
+}
+
+Ref: student.id < course_record.student_id
+Ref: teacher.id < course_record.teacher_id
