@@ -1,21 +1,21 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlmodel import SQLModel, create_engine, Session
+from sqlalchemy import Engine
 from dotenv import load_dotenv, find_dotenv
 from contextlib import contextmanager
 import os
+from typing import ClassVar
 
 load_dotenv(find_dotenv())
 
 
-class Base(DeclarativeBase):
-    """Base factory class to create basic CRUD functions"""
+class Base(SQLModel):
+    """Base class to perform session management for DB trasanctions"""
 
-    engine = create_engine(os.getenv("NEON_DB_CONNECTION_URL"))
-    Session = sessionmaker(bind=engine)
+    engine: ClassVar[Engine] = create_engine(os.getenv("NEON_DB_CONNECTION_URL"))
 
     @classmethod
     @contextmanager
     def session_scope(cls):
-        """context manager to facilitate SQLAlchemy transactions"""
-        session = cls.Session()
+        """context manager to facilitate SQL transactions"""
+        session = Session(cls.engine)
         yield session

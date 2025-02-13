@@ -1,12 +1,10 @@
 from DB.Base import Base
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import VARCHAR
+from sqlmodel import Field
 
 
-class Student(Base):
-    __tablename__ = "student"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(VARCHAR)
+class Student(Base, table=True):
+    id: int = Field(primary_key=True)
+    name: str = Field(nullable=False)
 
     def __repr__(self) -> str:
         return f"Student(id={self.id!r}, name={self.name!r})"
