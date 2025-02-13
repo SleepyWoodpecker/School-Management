@@ -1,13 +1,13 @@
 from DB.Base import Base
-from sqlmodel import Field
+from sqlmodel import Field, PrimaryKeyConstraint
 from typing import Optional
 from datetime import datetime
 
 
 class Course_Record(Base, table=True):
-    id: int = Field(primary_key=True)
+    __table_args__ = (PrimaryKeyConstraint("student_id", "start_date"),)
+
     student_id: int = Field(foreign_key="student.id")
-    teacher_id: int = Field(foreign_key="teacher.id")
     start_date: datetime = Field(nullable=False)
     grade: Optional[float] = Field(default=None)
     gpa: Optional[float] = Field(default=None)
