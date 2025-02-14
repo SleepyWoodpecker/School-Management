@@ -12,3 +12,9 @@ class CamelResponse(BaseModel):
 
 class PingResponse(CamelResponse):
     pong: bool
+
+
+class StudentDataResponse(CamelResponse):
+    student_name: str
+    cumulative_gpa: float
+    teacher_name: str
