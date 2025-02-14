@@ -12,6 +12,7 @@ class CamelResponse(BaseModel):
 
 class PingResponse(CamelResponse):
     pong: bool
+    database_connected: bool
 
 
 class StudentDataResponse(CamelResponse):
