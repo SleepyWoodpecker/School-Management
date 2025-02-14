@@ -37,7 +37,7 @@ def pong(request: Request) -> PingResponse:
 
 
 @app.get(
-    "/get-all-student-data",
+    "/students",
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(verify_db_connection)],
 )
