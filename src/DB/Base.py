@@ -11,7 +11,10 @@ load_dotenv(find_dotenv())
 class Base(SQLModel):
     """Base class to perform session management for DB trasanctions"""
 
-    engine: ClassVar[Engine] = create_engine(os.getenv("NEON_DB_CONNECTION_URL"))
+    engine: ClassVar[Engine] = create_engine(
+        os.getenv("NEON_DB_CONNECTION_URL"),
+        echo=os.getenv("IS_DEV_MODE") == "True",
+    )
 
     @classmethod
     @contextmanager
