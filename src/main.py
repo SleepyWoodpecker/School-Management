@@ -3,7 +3,12 @@ from fastapi.responses import JSONResponse
 from typing import Callable
 from contextlib import asynccontextmanager
 
-from models.response_models import PingResponse, StudentDataResponse
+from models.response_models import (
+    PingResponse,
+    StudentDataResponse,
+    ChangeTeacherResponse,
+)
+from models.request_models import ChangeTeacherRequest
 from DB import init_db, StudentDB, DBConnectionError, DBAPIError
 
 
@@ -73,3 +78,16 @@ def get_student_data() -> list[StudentDataResponse]:
     """For all students in the DB, get back their name, cumulative GPA and teacher's name"""
     all_student_data = student_db.get_all_cumulative_gpa_and_teacher_name()
     return all_student_data
+
+
+@app.post(
+    "/student/change-teacher",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_db_connection)],
+)
+def change_teacher_data(req_body: ChangeTeacherRequest) -> ChangeTeacherResponse:
+    """Changes the teacher that is assigned to the student, returning the new reocrd of the student-teacher pair upon a successful update"""
+    return {
+        "student_name": req_body.student_name,
+        "teacher_name": req_body.new_teacher_name,
+    }

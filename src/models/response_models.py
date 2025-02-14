@@ -19,3 +19,8 @@ class StudentDataResponse(CamelResponse):
     student_name: str
     cumulative_gpa: float
     teacher_name: str
+
+
+class ChangeTeacherResponse(CamelResponse):
+    student_name: str
+    teacher_name: str
