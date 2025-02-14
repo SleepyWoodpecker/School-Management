@@ -21,4 +21,8 @@ class Base(SQLModel):
     def session_scope(cls):
         """context manager to facilitate SQL transactions"""
         session = Session(cls.engine)
-        yield session
+        try:
+            yield session
+
+        finally:
+            session.close()
