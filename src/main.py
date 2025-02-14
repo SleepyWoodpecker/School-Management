@@ -2,8 +2,7 @@ from fastapi import FastAPI, status
 from contextlib import asynccontextmanager
 
 from models.response_models import PingResponse, StudentDataResponse
-from DB.DB import init_db
-from DB import StudentDB
+from DB import init_db, StudentDB
 
 
 @asynccontextmanager
