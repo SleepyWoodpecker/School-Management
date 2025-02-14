@@ -1,8 +1,11 @@
 from DB.Base import Base
 from sqlmodel import Field, select
 from sqlalchemy import func
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.exc import SQLAlchemyError
 from DB.course import Course_Record
 from DB.teacher import Teacher
+from DB.db_exceptions import DBAPIError
 
 
 class Student(Base, table=True):
@@ -32,5 +35,13 @@ class StudentDB:
         ).join(Teacher, subquery.c.student_teacher_id == Teacher.id)
 
         with Base.session_scope() as session:
-            scores = session.exec(query)
-            return [score._mapping for score in scores]
+            try:
+                scores = session.exec(query)
+                return [score._mapping for score in scores]
+
+            except SQLAlchemyError as e:
+                raise DBAPIError(
+                    sql_statement=str(query.compile(dialect=postgresql.dialect())),
+                    original_error=str(e),
+                    SQLAlchemyError=e,
+                )

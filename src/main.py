@@ -1,8 +1,10 @@
 from fastapi import FastAPI, status, Request, HTTPException, Depends
+from fastapi.responses import JSONResponse
+from typing import Callable
 from contextlib import asynccontextmanager
 
 from models.response_models import PingResponse, StudentDataResponse
-from DB import init_db, StudentDB, DBConnectionError
+from DB import init_db, StudentDB, DBConnectionError, DBAPIError
 
 
 @asynccontextmanager
@@ -29,6 +31,32 @@ def verify_db_connection(request: Request):
             status_code=503, detail="Service unavailable - Database connection failed"
         )
     return True
+
+
+def create_exception_handler(
+    status_code: int, initial_detials: str
+) -> Callable[[Request, DBAPIError], JSONResponse]:
+    detail = {"message": initial_detials}
+
+    def exception_handler(_: Request, exc: DBAPIError) -> JSONResponse:
+        if exc.message:
+            detail["message"] = exc.message
+
+        # TODO: log the error
+        return JSONResponse(
+            status_code=status_code, content={"details": detail["message"]}
+        )
+
+    return exception_handler
+
+
+app.add_exception_handler(
+    exc_class_or_status_code=DBAPIError,
+    handler=create_exception_handler(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        initial_detials="We are experiencing some trouble performing our DB operations",
+    ),
+)
 
 
 @app.get("/ping", status_code=status.HTTP_200_OK)
