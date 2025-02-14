@@ -20,6 +20,7 @@ psycopg2==2.9.10
 pydantic==2.10.6
 pydantic_core==2.27.2
 Pygments==2.19.1
+pyhumps==3.8.0
 python-dotenv==1.0.1
 python-multipart==0.0.20
 PyYAML==6.0.2

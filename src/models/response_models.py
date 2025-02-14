@@ -1,5 +1,14 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from humps import camelize
 
 
-class PingResponse(BaseModel):
+def to_camel(string: str) -> str:
+    return camelize(string)
+
+
+class CamelResponse(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+
+class PingResponse(CamelResponse):
     pong: bool
