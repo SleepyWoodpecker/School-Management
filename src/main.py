@@ -1,7 +1,8 @@
-from fastapi import FastAPI, status, Request, HTTPException, Depends
+from fastapi import FastAPI, status, Request, HTTPException, Depends, Query
 from fastapi.responses import JSONResponse
 from typing import Callable
 from contextlib import asynccontextmanager
+from typing import Annotated
 
 from models.response_models import (
     PingResponse,
@@ -9,6 +10,7 @@ from models.response_models import (
     ChangeTeacherResponse,
 )
 from models.request_models import ChangeTeacherRequest
+from validators import validate_date
 from DB import init_db, StudentDB, DBConnectionError, DBAPIError, DBRecordNotFoundError
 
 
@@ -84,10 +86,59 @@ def pong(request: Request) -> PingResponse:
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(verify_db_connection)],
 )
-def get_student_data() -> list[StudentDataResponse]:
-    """For all students in the DB, get back their name, cumulative GPA and teacher's name"""
-    all_student_data = student_db.get_all_cumulative_gpa_and_teacher_name()
-    return all_student_data
+def get_student_data(
+    start_date: Annotated[
+        str,
+        Query(alias="startDate", description="Format: DD-MM-YYYY"),
+    ] = None,
+    end_date: Annotated[
+        str,
+        Query(alias="endDate", description="Format: DD-MM-YYYY"),
+    ] = None,
+) -> list[StudentDataResponse]:
+    """
+    For all students in the DB, get back their name, cumulative GPA and teacher's name
+
+    When provided with the optional startDate and endDate arguments, filter course records based on the end date of that course. This is so that all course records can be meaningfully included in the student's cumulative GPA calculation
+
+    Args:
+
+        startDate: the earliest record that you want to take into consideration
+
+        endDate: the latest record that you want to take into consideration
+
+    Returns:
+
+        If neither startDate nor endDate are provided, all student course records that will be considered
+
+        If only startDate is provided, only courses that ended after the start date are considered
+
+        If only endDate is provided, only course that ended before the endDate are considered
+
+        If both startDate and endDate are provided, only course records that ended between the startDate and the endDate are considered
+    """
+    # ideally, this could have been a dependency, but I could not combine a dependency and a query, so this is in the route handling logic instead
+    start_date = validate_date(start_date)
+    end_date = validate_date(end_date)
+
+    if start_date > end_date:
+        # TODO: add documentation for this error
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Start date should not come before the end date. startDate: {start_date}, endDate: {end_date}",
+        )
+
+    if start_date and end_date:
+        pass
+
+    elif start_date:
+        pass
+
+    elif end_date:
+        pass
+
+    else:
+        return student_db.get_all_cumulative_gpa_and_teacher_name()
 
 
 @app.post(
