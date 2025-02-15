@@ -1,0 +1,7 @@
+services:
+  backend:
+    build: .
+    environment:
+      - NEON_DB_CONNECTION_URL=${NEON_DB_CONNECTION_URL}
+    ports:
+      - "3003:3003"
