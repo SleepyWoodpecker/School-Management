@@ -11,6 +11,7 @@ from models.response_models import (
     RecordNotFoundResponse,
     InvalidParamsResponse,
     StudentDataListResponse,
+    BadRequestResponse,
 )
 from models.request_models import ChangeTeacherRequest
 from validators import validate_date
@@ -100,6 +101,20 @@ def pong(request: Request) -> PingResponse:
     "/students",
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(verify_db_connection)],
+    responses={
+        status.HTTP_200_OK: {
+            "model": StudentDataListResponse,
+            "description": "Returns a list of all the student data requested. If a startDate and or endDate were provided, only student data from that period of time would be considered",
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "model": BadRequestResponse,
+            "description": "Ordering of dates is incorrect",
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "model": InvalidParamsResponse,
+            "description": "Dates were not formatted in the DD-MM-YYYY style specified",
+        },
+    },
 )
 def get_student_data(
     start_date: Annotated[
@@ -137,7 +152,6 @@ def get_student_data(
     end_date = validate_date(end_date)
 
     if start_date and end_date and start_date > end_date:
-        # TODO: add documentation for this error
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Start date should not come before the end date. startDate: {start_date}, endDate: {end_date}",

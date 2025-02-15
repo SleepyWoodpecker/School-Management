@@ -46,7 +46,7 @@ class InvalidParamsResponse(ResponseModel):
 
 
 class BadRequestResponse(ResponseModel):
-    pass
+    detail: str
 
 
 class RecordNotFoundResponse(ResponseModel):
