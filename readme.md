@@ -15,6 +15,8 @@
    - reduce data redundancy: you can always find start_date, given an end_date, so there is no need to add another column
    - searches are currently made by end_date, so storing end_date better supports the queries that I will make
    - end_date is known once the course record is made
+6. Further normalize the table to store raw grades only
+   - enables greater flexibility for grade to GPA range in the future to support curving (I know too well)
 
 ## In creating this backend service, here are the assumptions I have made:
 
@@ -23,6 +25,7 @@
    - Sem 2: Jan 1 to April 1
 2. Each semester, the single course that the students take are the same. Changing their teacher only changes the teacher they are taking the class from.
 3. Each student only receives their GPA for that semester at the end of the semester
+4. Raw scores can only fall in between 0 and 100
 
 ### DB Diagram
 

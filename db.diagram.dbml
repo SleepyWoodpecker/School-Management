@@ -12,8 +12,7 @@ Table teacher {
 Table course_record {
   student_id int [not null]
   end_date datetime [not null]
-  grade float 
-  gpa float
+  grade float
 
   indexes {
     (student_id, end_date) [pk]
