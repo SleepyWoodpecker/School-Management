@@ -22,5 +22,7 @@ class StudentDataResponse(CamelResponse):
 
 
 class ChangeTeacherResponse(CamelResponse):
+    student_id: int
     student_name: str
-    teacher_name: str
+    updated_teacher_id: int
+    updated_teacher_name: str

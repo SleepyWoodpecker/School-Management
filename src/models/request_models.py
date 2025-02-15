@@ -22,5 +22,5 @@ class CamelRequest(BaseModel):
 
 
 class ChangeTeacherRequest(CamelRequest):
-    student_name: str
-    new_teacher_name: str
+    student_id: int
+    new_teacher_id: int

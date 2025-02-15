@@ -86,8 +86,15 @@ def get_student_data() -> list[StudentDataResponse]:
     dependencies=[Depends(verify_db_connection)],
 )
 def change_teacher_data(req_body: ChangeTeacherRequest) -> ChangeTeacherResponse:
-    """Changes the teacher that is assigned to the student, returning the new reocrd of the student-teacher pair upon a successful update"""
+    """
+    Changes the teacher that is assigned to the student, returning the new reocrd of the student-teacher pair upon a successful update
+
+    Here, the API contract asks for the student's ID and the new teacher's ID because they can uniquely identify the student and teacher.
+    It is also likely that the frontend has that kind of data encoded into them already.
+    """
     return {
-        "student_name": req_body.student_name,
-        "teacher_name": req_body.new_teacher_name,
+        "student_id": req_body.student_id,
+        "student_name": "student",
+        "updated_teacher_id": req_body.new_teacher_id,
+        "updated_teacher_name": "teacher",
     }
