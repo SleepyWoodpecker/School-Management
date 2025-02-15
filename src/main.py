@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from typing import Callable
 from contextlib import asynccontextmanager
 from typing import Annotated
+from datetime import datetime
 
 from models.response_models import (
     PingResponse,
@@ -121,7 +122,7 @@ def get_student_data(
     start_date = validate_date(start_date)
     end_date = validate_date(end_date)
 
-    if start_date > end_date:
+    if start_date and end_date and start_date > end_date:
         # TODO: add documentation for this error
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

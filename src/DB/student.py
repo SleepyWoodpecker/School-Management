@@ -1,6 +1,9 @@
 from DB.Base import Base
 from sqlmodel import Field, select, update
-from sqlalchemy import func
+
+# choice of type import: https://docs.sqlalchemy.org/en/20/core/type_basics.html
+from sqlalchemy import func, FLOAT, and_
+from sqlalchemy.sql import Values, column
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound, IntegrityError
 from DB.course import Course_Record
@@ -8,6 +11,7 @@ from DB.teacher import Teacher
 from DB.db_exceptions import DBAPIError, DBRecordNotFoundError
 
 from models import StudentDataResponse, ChangeTeacherResponse
+from data import gpa_mapping
 
 
 class Student(Base, table=True):
@@ -36,20 +40,46 @@ class StudentDB:
         Raises:
             DBAPIError: If there was an issue with the DB request
         """
-        subquery = (
+        # put a GPA conversion table here
+        # can implement some function to change it in the future to support curving
+        gpa_conversion_scale = Values(
+            column("lower_bound", FLOAT),
+            column("upper_bound", FLOAT),
+            column("gpa", FLOAT),
+            name="gpa_conversion",
+        ).data(gpa_mapping)
+
+        score_to_gpa_query = (
             select(
+                Student.id.label("student_id"),
                 Student.name.label("student_name"),
+                gpa_conversion_scale.c.gpa.label("gpa"),
+                Course_Record.grade.label("grade"),
                 Student.teacher_id.label("student_teacher_id"),
-                func.avg(Course_Record.gpa).label("cumulative_gpa"),
             )
             .join(Student, Student.id == Course_Record.student_id)
-            .group_by(Student.id)
-        ).subquery()
-        query = select(
-            subquery.c.student_name,
-            subquery.c.cumulative_gpa,
-            Teacher.name.label("teacher_name"),
-        ).join(Teacher, subquery.c.student_teacher_id == Teacher.id)
+            .join(
+                gpa_conversion_scale,
+                and_(
+                    Course_Record.grade >= gpa_conversion_scale.c.lower_bound,
+                    Course_Record.grade <= gpa_conversion_scale.c.upper_bound,
+                ),
+            )
+        )
+
+        query = (
+            select(
+                score_to_gpa_query.c.student_name.label("student_name"),
+                Teacher.name.label("teacher_name"),
+                func.avg(score_to_gpa_query.c.gpa).label("cumulative_gpa"),
+            )
+            .join(Teacher, score_to_gpa_query.c.student_teacher_id == Teacher.id)
+            .group_by(
+                score_to_gpa_query.c.student_id,
+                score_to_gpa_query.c.student_name,
+                Teacher.name,
+            )
+        )
 
         with Base.session_scope() as session:
             try:
@@ -58,6 +88,7 @@ class StudentDB:
 
             except SQLAlchemyError as e:
                 raise DBAPIError(
+                    message="There was an issue trying to calculate the cumulative GPA and teacher name for each student",
                     sql_statement=str(query.compile(dialect=postgresql.dialect())),
                     original_error=str(e),
                 )
