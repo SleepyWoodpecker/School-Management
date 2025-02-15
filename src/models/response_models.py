@@ -10,6 +10,10 @@ class CamelResponse(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
+class ResponseModel(CamelResponse):
+    ok: bool
+
+
 class PingResponse(CamelResponse):
     pong: bool
     database_connected: bool
@@ -26,3 +30,16 @@ class ChangeTeacherResponse(CamelResponse):
     student_name: str
     updated_teacher_id: int
     updated_teacher_name: str
+
+
+class InvalidParamsResponse(ResponseModel):
+    detail: str
+    params: str
+
+
+class BadRequestResponse(ResponseModel):
+    pass
+
+
+class RecordNotFoundResponse(ResponseModel):
+    details: str

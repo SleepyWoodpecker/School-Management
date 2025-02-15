@@ -1,17 +1,16 @@
 from fastapi import FastAPI, status, Request, HTTPException, Depends, Query
 from fastapi.exceptions import RequestValidationError
-from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from typing import Callable
 from contextlib import asynccontextmanager
 from typing import Annotated
-from datetime import datetime
-import json
 
 from models.response_models import (
     PingResponse,
     StudentDataResponse,
     ChangeTeacherResponse,
+    RecordNotFoundResponse,
+    InvalidParamsResponse,
 )
 from models.request_models import ChangeTeacherRequest
 from validators import validate_date
@@ -163,12 +162,33 @@ def get_student_data(
     "/students/change-teacher",
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(verify_db_connection)],
+    responses={
+        status.HTTP_200_OK: {
+            "model": ChangeTeacherRequest,
+            "description": "Teacher changed successfully",
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": RecordNotFoundResponse,
+            "description": "raised when either the requested student / teacher cannot be found",
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "model": InvalidParamsResponse,
+            "description": "raised when the request parameters, student_id / new_teacher_id are invalid",
+        },
+    },
 )
 # Here, the API contract asks for the student's ID and the new teacher's ID because they can uniquely identify the student and teacher.
 #  It is also likely that the frontend has that kind of data encoded into them already.
 def change_teacher_data(req_body: ChangeTeacherRequest) -> ChangeTeacherResponse:
     """
     Changes the teacher that is assigned to the student, returning the new record of the student-teacher pair upon a successful update
+
+    Body params:
+
+        student_id: the id of the student who you want to change a teacher for
+
+        new_teacher_id: the id of the new teacher that you want to assign to the student
+
     """
     updated_student = student_db.change_teacher(
         req_body.student_id, req_body.new_teacher_id
