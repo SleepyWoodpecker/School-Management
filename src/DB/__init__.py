@@ -3,4 +3,4 @@ import DB.teacher
 import DB.course
 from DB.DB import init_db
 
-from DB.db_exceptions import DBAPIError, DBConnectionError
+from DB.db_exceptions import DBAPIError, DBConnectionError, DBRecordNotFoundError

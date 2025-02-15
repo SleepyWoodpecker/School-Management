@@ -1,11 +1,11 @@
 from DB.Base import Base
-from sqlmodel import Field, select
+from sqlmodel import Field, select, update
 from sqlalchemy import func
 from sqlalchemy.dialects import postgresql
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, NoResultFound, IntegrityError
 from DB.course import Course_Record
 from DB.teacher import Teacher
-from DB.db_exceptions import DBAPIError
+from DB.db_exceptions import DBAPIError, DBRecordNotFoundError
 
 from models import StudentDataResponse, ChangeTeacherResponse
 
@@ -60,5 +60,94 @@ class StudentDB:
                 raise DBAPIError(
                     sql_statement=str(query.compile(dialect=postgresql.dialect())),
                     original_error=str(e),
-                    SQLAlchemyError=e,
+                )
+
+    def change_teacher(self, student_id: int, teacher_id: int) -> ChangeTeacherResponse:
+        """
+        Change the teacher assigned to the student
+
+        Args:
+            student_id: DB ID of student
+            teacher_id: DB ID of teacher
+
+        Returns:
+            ChangeTeacherResponse
+
+        Raises:
+            DBRecordNotFoundError: requested resource does not exist on the DB
+            DBAPIError: if there was any other issue with the DB request
+        """
+        with Base.session_scope() as session:
+            update_student_query = (
+                update(Student)
+                .where(Student.id == student_id)
+                .values(teacher_id=teacher_id)
+            )
+
+            update_student_query_sql = update_student_query.compile(
+                dialect=postgresql.dialect()
+            )
+
+            try:
+
+                update_result = session.exec(update_student_query)
+                session.commit()
+
+                # raise an error if the requested student cannot be found
+                if update_result.rowcount == 0:
+                    raise DBRecordNotFoundError(
+                        message="The requested student cannot be found",
+                        sql_statement=str(update_student_query_sql),
+                        params=update_student_query_sql.params,
+                    )
+
+            except IntegrityError as e:
+                raise DBRecordNotFoundError(
+                    message="The requested teacher ID cannot be found in the DB",
+                    sql_statement=update_student_query_sql,
+                    params=update_student_query_sql.params,
+                    original_error=str(e),
+                )
+
+            except SQLAlchemyError as e:
+                raise DBRecordNotFoundError(
+                    message="An exception occured when trying to update the student's teacher",
+                    sql_statement=update_student_query_sql,
+                    params=update_student_query_sql.params,
+                    original_error=str(e),
+                )
+
+            find_updated_student_query = (
+                select(
+                    Student.name.label("student_name"),
+                    Student.id.label("student_id"),
+                    Teacher.name.label("updated_teacher_name"),
+                    Teacher.id.label("updated_teacher_id"),
+                )
+                .where(Student.id == student_id)
+                .join(Teacher, Teacher.id == Student.teacher_id)
+            )
+
+            find_updated_student_query_sql = find_updated_student_query.compile(
+                dialect=postgresql.dialect()
+            )
+
+            try:
+                updated_student = session.exec(find_updated_student_query).one()
+                return updated_student._mapping
+
+            except NoResultFound as e:
+                raise DBRecordNotFoundError(
+                    message="The requested student cannot be found after the update",
+                    sql_statement=str(find_updated_student_query_sql),
+                    params=find_updated_student_query_sql.params,
+                    original_error=str(e),
+                )
+
+            except SQLAlchemyError as e:
+                raise DBAPIError(
+                    message="Exception occured when searching for student after the update to teacher id",
+                    sql_statement=str(find_updated_student_query_sql),
+                    params=find_updated_student_query_sql.params,
+                    original_error=str(e),
                 )

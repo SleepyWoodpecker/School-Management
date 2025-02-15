@@ -27,3 +27,9 @@ class DBConnectionError(DBAPIError):
     """error connecting to the database"""
 
     pass
+
+
+class DBRecordNotFoundError(DBAPIError):
+    """the requested record cannot be found in the DB"""
+
+    pass

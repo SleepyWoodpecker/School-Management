@@ -9,7 +9,7 @@ from models.response_models import (
     ChangeTeacherResponse,
 )
 from models.request_models import ChangeTeacherRequest
-from DB import init_db, StudentDB, DBConnectionError, DBAPIError
+from DB import init_db, StudentDB, DBConnectionError, DBAPIError, DBRecordNotFoundError
 
 
 @asynccontextmanager
@@ -48,11 +48,21 @@ def create_exception_handler(
             detail["message"] = exc.message
 
         # TODO: log the error
+        print("HERE ", exc.sql_statement, exc.params)
         return JSONResponse(
             status_code=status_code, content={"details": detail["message"]}
         )
 
     return exception_handler
+
+
+app.add_exception_handler(
+    exc_class_or_status_code=DBRecordNotFoundError,
+    handler=create_exception_handler(
+        status_code=status.HTTP_404_NOT_FOUND,
+        initial_detials="The record you requested cannot be found",
+    ),
+)
 
 
 app.add_exception_handler(
@@ -92,9 +102,7 @@ def change_teacher_data(req_body: ChangeTeacherRequest) -> ChangeTeacherResponse
     Here, the API contract asks for the student's ID and the new teacher's ID because they can uniquely identify the student and teacher.
     It is also likely that the frontend has that kind of data encoded into them already.
     """
-    return {
-        "student_id": req_body.student_id,
-        "student_name": "student",
-        "updated_teacher_id": req_body.new_teacher_id,
-        "updated_teacher_name": "teacher",
-    }
+    updated_student = student_db.change_teacher(
+        req_body.student_id, req_body.new_teacher_id
+    )
+    return updated_student
