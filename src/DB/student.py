@@ -168,6 +168,7 @@ class StudentDB:
                 return updated_student._mapping
 
             except NoResultFound as e:
+                session.rollback()
                 raise DBRecordNotFoundError(
                     message="The requested student cannot be found after the update",
                     sql_statement=str(find_updated_student_query_sql),
@@ -176,6 +177,7 @@ class StudentDB:
                 )
 
             except SQLAlchemyError as e:
+                session.rollback()
                 raise DBAPIError(
                     message="Exception occured when searching for student after the update to teacher id",
                     sql_statement=str(find_updated_student_query_sql),
