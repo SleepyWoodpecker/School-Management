@@ -95,12 +95,11 @@ def get_student_data() -> list[StudentDataResponse]:
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(verify_db_connection)],
 )
+# Here, the API contract asks for the student's ID and the new teacher's ID because they can uniquely identify the student and teacher.
+#  It is also likely that the frontend has that kind of data encoded into them already.
 def change_teacher_data(req_body: ChangeTeacherRequest) -> ChangeTeacherResponse:
     """
-    Changes the teacher that is assigned to the student, returning the new reocrd of the student-teacher pair upon a successful update
-
-    Here, the API contract asks for the student's ID and the new teacher's ID because they can uniquely identify the student and teacher.
-    It is also likely that the frontend has that kind of data encoded into them already.
+    Changes the teacher that is assigned to the student, returning the new record of the student-teacher pair upon a successful update
     """
     updated_student = student_db.change_teacher(
         req_body.student_id, req_body.new_teacher_id
