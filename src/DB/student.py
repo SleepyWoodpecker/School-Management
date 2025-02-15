@@ -7,7 +7,7 @@ from DB.course import Course_Record
 from DB.teacher import Teacher
 from DB.db_exceptions import DBAPIError
 
-from models import StudentDataResponse
+from models import StudentDataResponse, ChangeTeacherResponse
 
 
 class Student(Base, table=True):
@@ -26,6 +26,15 @@ class StudentDB:
           (a) name
           (b) cumulative GPA up till this point in time
           (c) teacher name
+
+        Args:
+            None
+
+        Returns:
+            A list of StudentDataResponses
+
+        Raises:
+            DBAPIError: If there was an issue with the DB request
         """
         subquery = (
             select(
