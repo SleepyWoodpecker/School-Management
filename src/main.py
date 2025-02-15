@@ -130,7 +130,9 @@ def get_student_data(
         )
 
     if start_date and end_date:
-        pass
+        return student_db.get_all_cumulative_gpa_and_teacher_name_between(
+            start_date, end_date
+        )
 
     elif start_date:
         return student_db.get_all_cumulative_gpa_and_teacher_name_after(start_date)
