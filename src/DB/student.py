@@ -7,6 +7,8 @@ from DB.course import Course_Record
 from DB.teacher import Teacher
 from DB.db_exceptions import DBAPIError
 
+from models import StudentDataResponse
+
 
 class Student(Base, table=True):
     id: int = Field(primary_key=True)
@@ -18,7 +20,13 @@ class Student(Base, table=True):
 
 
 class StudentDB:
-    def get_all_cumulative_gpa_and_teacher_name(self):
+    def get_all_cumulative_gpa_and_teacher_name(self) -> StudentDataResponse:
+        """
+        For each student in the DB, get their:
+          (a) name
+          (b) cumulative GPA up till this point in time
+          (c) teacher name
+        """
         subquery = (
             select(
                 Student.name.label("student_name"),
