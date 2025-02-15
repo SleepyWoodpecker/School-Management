@@ -250,3 +250,68 @@ class StudentDB:
                     sql_statement=str(query.compile(dialect=postgresql.dialect())),
                     original_error=str(e),
                 )
+
+    def get_all_cumulative_gpa_and_teacher_name_before(
+        self, end_date: datetime
+    ) -> list[StudentDataResponse]:
+        """
+        For each student in the DB, get their the following information for courses that ended during or before the start date:
+          (a) name
+          (b) cumulative GPA up till this point in time
+          (c) teacher name
+
+        NOTE: This will exclude students who dont have a course record before `end_date`
+
+        Args:
+            `end_date`: the latest date from which you want to start considering student scores
+
+        Returns:
+            A list of StudentDataResponses
+
+        Raises:
+            DBAPIError: If there was an issue with the DB request
+        """
+        score_to_gpa_query = (
+            select(
+                Student.id.label("student_id"),
+                Student.name.label("student_name"),
+                self.gpa_conversion_scale.c.gpa.label("gpa"),
+                Course_Record.grade.label("grade"),
+                Student.teacher_id.label("student_teacher_id"),
+            )
+            .join(Student, Student.id == Course_Record.student_id)
+            .join(
+                self.gpa_conversion_scale,
+                and_(
+                    Course_Record.grade >= self.gpa_conversion_scale.c.lower_bound,
+                    Course_Record.grade <= self.gpa_conversion_scale.c.upper_bound,
+                ),
+            )
+            .where(Course_Record.end_date <= end_date)
+        )
+
+        query = (
+            select(
+                score_to_gpa_query.c.student_name.label("student_name"),
+                Teacher.name.label("teacher_name"),
+                func.avg(score_to_gpa_query.c.gpa).label("cumulative_gpa"),
+            )
+            .join(Teacher, score_to_gpa_query.c.student_teacher_id == Teacher.id)
+            .group_by(
+                score_to_gpa_query.c.student_id,
+                score_to_gpa_query.c.student_name,
+                Teacher.name,
+            )
+        )
+
+        with Base.session_scope() as session:
+            try:
+                scores = session.exec(query)
+                return [score._mapping for score in scores]
+
+            except SQLAlchemyError as e:
+                raise DBAPIError(
+                    message="There was an issue trying to calculate the cumulative GPA and teacher name for each student when filtering by start date",
+                    sql_statement=str(query.compile(dialect=postgresql.dialect())),
+                    original_error=str(e),
+                )

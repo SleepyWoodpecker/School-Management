@@ -136,7 +136,7 @@ def get_student_data(
         return student_db.get_all_cumulative_gpa_and_teacher_name_after(start_date)
 
     elif end_date:
-        pass
+        return student_db.get_all_cumulative_gpa_and_teacher_name_before(end_date)
 
     else:
         return student_db.get_all_cumulative_gpa_and_teacher_name()
