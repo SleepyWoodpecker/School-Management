@@ -24,7 +24,7 @@ class Student(Base, table=True):
 
 
 class StudentDB:
-    def get_all_cumulative_gpa_and_teacher_name(self) -> StudentDataResponse:
+    def get_all_cumulative_gpa_and_teacher_name(self) -> list[StudentDataResponse]:
         """
         For each student in the DB, get their:
           (a) name
