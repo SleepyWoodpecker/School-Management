@@ -34,8 +34,6 @@ def validate_date(date_string: Optional[str] = None) -> Optional[datetime]:
         return date_obj
 
     except (ValueError, TypeError) as e:
-        # I would reason that there is no need for a custom error class here because
-        # there is not much helpful logging that you can have here
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Invalid date: {date_string}. Format should be DD-MM-YYYY",

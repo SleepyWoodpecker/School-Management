@@ -9,7 +9,7 @@ class DBAPIError(Exception):
         message: str = "DB operation failed",
         sql_statement: str = None,
         params: str = None,
-        original_error: SQLAlchemyError = None,
+        original_error: str = None,
     ):
         self.message = message
         self.sql_statement = sql_statement

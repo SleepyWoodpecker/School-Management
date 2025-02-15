@@ -4,6 +4,8 @@ from fastapi.responses import JSONResponse
 from typing import Callable
 from contextlib import asynccontextmanager
 from typing import Annotated
+import logging, os
+from dotenv import load_dotenv, find_dotenv
 
 from models.response_models import (
     PingResponse,
@@ -17,27 +19,43 @@ from models.request_models import ChangeTeacherRequest
 from validators import validate_date
 from DB import init_db, StudentDB, DBConnectionError, DBAPIError, DBRecordNotFoundError
 
+load_dotenv(find_dotenv())
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """manages what functions run on app startup and what funcitions run on app teardown"""
+    if not os.path.exists(f"""./{os.getenv("LOGGING_FOLDER")}"""):
+        os.makedirs(f"""{os.getenv("LOGGING_FOLDER")}""", exist_ok=True)
+    try:
+        logging.basicConfig(
+            filename=f"""./{os.getenv("LOGGING_FOLDER")}/{os.getenv("LOG_FILE")}""",
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+        )
+    except FileNotFoundError:
+        print("logging cannot be set up")
+
     try:
         init_db()
         app.state.db_connected = True
     except DBConnectionError as e:
         app.state.db_connected = False
+        logging.critical("DB CONNECTION CANNOT BE ESTABLISHED")
         print("Trouble connecting to DB :(")
 
     yield ()
 
 
 app = FastAPI(lifespan=lifespan)
+
 student_db = StudentDB()
 
 
 def verify_db_connection(request: Request):
     """Dependency that verifies DB status for routes"""
     if not request.app.state.db_connected:
+        logging.critical("DB CONNECTION CANNOT BE ESTABLISHED")
         raise HTTPException(
             status_code=503, detail="Service unavailable - Database connection failed"
         )
@@ -46,7 +64,10 @@ def verify_db_connection(request: Request):
 
 # general exception handlers
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(_: Request, exc: RequestValidationError):
+async def validation_exception_handler(req: Request, exc: RequestValidationError):
+    logging.info(
+        f"Invalid request params | {req.url} | {(await req.body()).decode()} | {req.query_params}"
+    )
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
@@ -65,7 +86,9 @@ def create_exception_handler(
 
     def exception_handler(_: Request, exc: DBAPIError) -> JSONResponse:
 
-        # TODO: log the error
+        logging.info(
+            f"Unsuccessful DB operation | {exc.message} | {exc.sql_statement} | {exc.params} | {exc.original_error}"
+        )
         print("HERE ", exc.sql_statement, exc.params)
         return JSONResponse(
             status_code=status_code, content={"details": detail["message"], "ok": False}
@@ -220,3 +243,9 @@ def change_teacher_data(req_body: ChangeTeacherRequest) -> ChangeTeacherResponse
     updated_student["ok"] = True
 
     return updated_student
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=3003)
