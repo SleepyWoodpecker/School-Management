@@ -30,7 +30,7 @@ student_db = StudentDB()
 
 
 def verify_db_connection(request: Request):
-    """Dependency that verifies DB status for protected routes"""
+    """Dependency that verifies DB status for routes"""
     if not request.app.state.db_connected:
         raise HTTPException(
             status_code=503, detail="Service unavailable - Database connection failed"
