@@ -1,2 +1,2 @@
-from request_models import ChangeTeacherRequest
-from response_models import StudentDataResponse, ChangeTeacherResponse
+from models.request_models import ChangeTeacherRequest
+from models.response_models import StudentDataResponse, ChangeTeacherResponse
