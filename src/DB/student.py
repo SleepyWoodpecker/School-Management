@@ -44,10 +44,10 @@ class StudentDB:
             None
 
         Returns:
-            A list of StudentDataResponses
+            A list of `StudentDataResponses`
 
         Raises:
-            DBAPIError: If there was an issue with the DB request
+            `DBAPIError`: If there was an issue with the DB request
         """
         # put a GPA conversion table here
         # can implement some function to change it in the future to support curving
@@ -101,15 +101,15 @@ class StudentDB:
         Change the teacher assigned to the student
 
         Args:
-            student_id: DB ID of student
-            teacher_id: DB ID of teacher
+            `student_id`: DB ID of student
+            `teacher_id`: DB ID of teacher
 
         Returns:
-            ChangeTeacherResponse
+            `ChangeTeacherResponse`
 
         Raises:
-            DBRecordNotFoundError: requested resource does not exist on the DB
-            DBAPIError: if there was any other issue with the DB request
+            `DBRecordNotFoundError`: requested resource does not exist on the DB
+            `DBAPIError`: if there was any other issue with the DB request
         """
         with Base.session_scope() as session:
             update_student_query = (
@@ -198,13 +198,13 @@ class StudentDB:
           (c) teacher name
 
         Args:
-            start_date: the earliest date from which you want to start considering student scores
+            `start_date`: the earliest date from which you want to start considering student scores
 
         Returns:
-            A list of StudentDataResponses
+            A list of `StudentDataResponses`
 
         Raises:
-            DBAPIError: If there was an issue with the DB request
+            `DBAPIError`: If there was an issue with the DB request
         """
         score_to_gpa_query = (
             select(
@@ -266,10 +266,10 @@ class StudentDB:
             `end_date`: the latest date from which you want to start considering student scores
 
         Returns:
-            A list of StudentDataResponses
+            A list of `StudentDataResponses`
 
         Raises:
-            DBAPIError: If there was an issue with the DB request
+           `DBAPIError`: If there was an issue with the DB request
         """
         score_to_gpa_query = (
             select(
