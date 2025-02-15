@@ -145,7 +145,7 @@ def get_student_data(
 
 
 @app.post(
-    "/student/change-teacher",
+    "/students/change-teacher",
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(verify_db_connection)],
 )
