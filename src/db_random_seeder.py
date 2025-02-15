@@ -54,7 +54,7 @@ def randomly_seed_db():
                     course_record = Course_Record(
                         student_id=student_id,
                         end_date=date,
-                        grade=fake.pyfloat(min_value=0.0, max_value=100.0),
+                        grade=fake.pyfloat(min_value=60.0, max_value=100.0),
                     )
                     session.add(course_record)
                     session.commit()
