@@ -10,11 +10,14 @@ Table teacher {
 }
 
 Table course_record {
-  id int [pk]
   student_id int [not null]
-  start_date timestamp [not null] // basically what helps you to track the semester count
+  end_date datetime [not null]
   grade float 
   gpa float
+
+  indexes {
+    (student_id, end_date) [pk]
+  }
 }
 
 Ref: student.id < course_record.student_id
