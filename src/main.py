@@ -1,9 +1,12 @@
 from fastapi import FastAPI, status, Request, HTTPException, Depends, Query
+from fastapi.exceptions import RequestValidationError
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from typing import Callable
 from contextlib import asynccontextmanager
 from typing import Annotated
 from datetime import datetime
+import json
 
 from models.response_models import (
     PingResponse,
@@ -41,19 +44,31 @@ def verify_db_connection(request: Request):
     return True
 
 
+# general exception handlers
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(_: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "detail": "Invalid request parameters",
+            "params": exc.body,
+            "ok": False,
+        },
+    )
+
+
+# DB exception handlers
 def create_exception_handler(
     status_code: int, initial_detials: str
 ) -> Callable[[Request, DBAPIError], JSONResponse]:
     detail = {"message": initial_detials}
 
     def exception_handler(_: Request, exc: DBAPIError) -> JSONResponse:
-        if exc.message:
-            detail["message"] = exc.message
 
         # TODO: log the error
         print("HERE ", exc.sql_statement, exc.params)
         return JSONResponse(
-            status_code=status_code, content={"details": detail["message"]}
+            status_code=status_code, content={"details": detail["message"], "ok": False}
         )
 
     return exception_handler
