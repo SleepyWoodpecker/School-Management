@@ -5,4 +5,5 @@ from models.response_models import (
     BadRequestResponse,
     RecordNotFoundResponse,
     InvalidParamsResponse,
+    StudentDataListResponse,
 )

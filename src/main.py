@@ -7,10 +7,10 @@ from typing import Annotated
 
 from models.response_models import (
     PingResponse,
-    StudentDataResponse,
     ChangeTeacherResponse,
     RecordNotFoundResponse,
     InvalidParamsResponse,
+    StudentDataListResponse,
 )
 from models.request_models import ChangeTeacherRequest
 from validators import validate_date
@@ -110,7 +110,7 @@ def get_student_data(
         str,
         Query(alias="endDate", description="Format: DD-MM-YYYY"),
     ] = None,
-) -> list[StudentDataResponse]:
+) -> StudentDataListResponse:
     """
     For all students in the DB, get back their name, cumulative GPA and teacher's name
 
@@ -143,19 +143,29 @@ def get_student_data(
             detail=f"Start date should not come before the end date. startDate: {start_date}, endDate: {end_date}",
         )
 
+    student_data_response = []
+
     if start_date and end_date:
-        return student_db.get_all_cumulative_gpa_and_teacher_name_between(
-            start_date, end_date
+        student_data_response = (
+            student_db.get_all_cumulative_gpa_and_teacher_name_between(
+                start_date, end_date
+            )
         )
 
     elif start_date:
-        return student_db.get_all_cumulative_gpa_and_teacher_name_after(start_date)
+        student_data_response = (
+            student_db.get_all_cumulative_gpa_and_teacher_name_after(start_date)
+        )
 
     elif end_date:
-        return student_db.get_all_cumulative_gpa_and_teacher_name_before(end_date)
+        student_data_response = (
+            student_db.get_all_cumulative_gpa_and_teacher_name_before(end_date)
+        )
 
     else:
-        return student_db.get_all_cumulative_gpa_and_teacher_name()
+        student_data_response = student_db.get_all_cumulative_gpa_and_teacher_name()
+
+    return {"ok": True, "student_data": student_data_response}
 
 
 @app.post(
@@ -164,7 +174,7 @@ def get_student_data(
     dependencies=[Depends(verify_db_connection)],
     responses={
         status.HTTP_200_OK: {
-            "model": ChangeTeacherRequest,
+            "model": ChangeTeacherResponse,
             "description": "Teacher changed successfully",
         },
         status.HTTP_404_NOT_FOUND: {
@@ -193,4 +203,6 @@ def change_teacher_data(req_body: ChangeTeacherRequest) -> ChangeTeacherResponse
     updated_student = student_db.change_teacher(
         req_body.student_id, req_body.new_teacher_id
     )
+    updated_student["ok"] = True
+
     return updated_student

@@ -87,7 +87,7 @@ class StudentDB:
         with Base.session_scope() as session:
             try:
                 scores = session.exec(query)
-                return [score._mapping for score in scores]
+                return [dict(score._mapping) for score in scores]
 
             except SQLAlchemyError as e:
                 raise DBAPIError(
@@ -168,7 +168,7 @@ class StudentDB:
 
             try:
                 updated_student = session.exec(find_updated_student_query).one()
-                return updated_student._mapping
+                return dict(updated_student._mapping)
 
             except NoResultFound as e:
                 session.rollback()
@@ -242,7 +242,7 @@ class StudentDB:
         with Base.session_scope() as session:
             try:
                 scores = session.exec(query)
-                return [score._mapping for score in scores]
+                return [dict(score._mapping) for score in scores]
 
             except SQLAlchemyError as e:
                 raise DBAPIError(
@@ -307,7 +307,7 @@ class StudentDB:
         with Base.session_scope() as session:
             try:
                 scores = session.exec(query)
-                return [score._mapping for score in scores]
+                return [dict(score._mapping) for score in scores]
 
             except SQLAlchemyError as e:
                 raise DBAPIError(
@@ -378,7 +378,7 @@ class StudentDB:
         with Base.session_scope() as session:
             try:
                 scores = session.exec(query)
-                return [score._mapping for score in scores]
+                return [dict(score._mapping) for score in scores]
 
             except SQLAlchemyError as e:
                 raise DBAPIError(

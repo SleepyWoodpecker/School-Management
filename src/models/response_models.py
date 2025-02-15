@@ -14,18 +14,26 @@ class ResponseModel(CamelResponse):
     ok: bool
 
 
-class PingResponse(CamelResponse):
+class PingResponse(ResponseModel):
     pong: bool
     database_connected: bool
 
 
-class StudentDataResponse(CamelResponse):
+class StudentData(CamelResponse):
     student_name: str
     cumulative_gpa: float
     teacher_name: str
 
 
-class ChangeTeacherResponse(CamelResponse):
+class StudentDataResponse(ResponseModel, StudentData):
+    pass
+
+
+class StudentDataListResponse(ResponseModel):
+    student_data: list[StudentData]
+
+
+class ChangeTeacherResponse(ResponseModel):
     student_id: int
     student_name: str
     updated_teacher_id: int
