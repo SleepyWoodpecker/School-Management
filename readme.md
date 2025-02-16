@@ -4,7 +4,7 @@
 
 ### Setup instructions (local)
 
-1. using `.env.sample`, fill in the environment variables in a file named `.env`
+1. using `.env.sample`, fill in the environment variables and save them to a file named `.env`
    - you can get a free postgres instance <a href="https://neon.tech/">here</a>
 2. create a virtual environment using `python -m venv <env_folder_name>`
 3. activate the virtual environment
@@ -16,7 +16,7 @@
 
 ### Setup instructions (Using Docker)
 
-1. using `.env.sample`, fill in the environment variables in a file named `.env`
+1. using `.env.sample`, fill in the environment variables and save them to a file named `.env`
    - you can get a free postgres instance <a href="https://neon.tech/">here</a>
 2. ensure that docker is open on your device
 3. run `docker compose up --build`
