@@ -2,7 +2,7 @@ services:
   backend:
     build: .
     environment:
-      - NEON_DB_CONNECTION_URL=${NEON_DB_CONNECTION_URL}
+      - POSTGRES_CONNECTION_URL=${POSTGRES_CONNECTION_URL}
       - LOGGING_FOLDER=${LOGGING_FOLDER}
       - LOG_FILE=${LOG_FILE}
     ports:

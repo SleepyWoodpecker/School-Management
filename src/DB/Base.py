@@ -12,7 +12,7 @@ class Base(SQLModel):
     """Base class to perform session management for DB trasanctions"""
 
     engine: ClassVar[Engine] = create_engine(
-        os.getenv("NEON_DB_CONNECTION_URL"),
+        os.getenv("POSTGRES_CONNECTION_URL"),
         echo=os.getenv("IS_DEV_MODE") == "True",
     )
 

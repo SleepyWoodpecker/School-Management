@@ -1,8 +1,25 @@
 # Submission for GovTech's 2025 Product Operations Tooling Internship
 
+Check out the docs and test the site live at: <a href="https://sleepy-woodpecker.xyz/docs">https://sleepy-woodpecker.xyz/docs</a>
+
+## Setup instructions (local)
+
+1. using `.env.sample`, fill in the environment variables
+   - you can get a free postgres instance <a href="https://neon.tech/">here</a>
+2. create a virtual environment using `python -m venv <env_folder_name>`
+3. activate the virtual environment
+   - MacOs / Unix: `source <env_folder_name>/bin/activate`
+   - Windows: `<env_folder_name>\Scripts\activate.bat`
+4. install dependencies using `pip install -r requirements.txt`
+5. go into the src folder using `cd src`
+6. start the server using `uvicorn main:app --host 0.0.0.0 --port 3003`
+
 ## Setup instructions (Using Docker)
 
-1. `docker compose up --build`
+1. 1. using `.env.sample`, fill in the environment variables
+   - you can get a free postgres instance <a href="https://neon.tech/">here</a>
+2. ensure that docker is open on your device
+3. run `docker compose up --build`
 
 ## Explanation of decisions
 
