@@ -1,5 +1,9 @@
 # Submission for GovTech's 2025 Product Operations Tooling Internship
 
+## Setup instructions (Using Docker)
+
+1. `docker compose up --build`
+
 ## Explanation of decisions
 
 1. Python makes the most sense to me, because it has great support for data analysis and processing with libraries like pandas -- something which may be required in a future update to this web service
