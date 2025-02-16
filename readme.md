@@ -1,8 +1,8 @@
 # Submission for GovTech's 2025 Product Operations Tooling Internship
 
-Check out the docs and test the site live at: <a href="https://sleepy-woodpecker.xyz/docs">https://sleepy-woodpecker.xyz/docs</a>
+## Check out the docs and test the site live at: <a href="https://sleepy-woodpecker.xyz/docs">https://sleepy-woodpecker.xyz/docs</a>
 
-## Setup instructions (local)
+### Setup instructions (local)
 
 1. using `.env.sample`, fill in the environment variables
    - you can get a free postgres instance <a href="https://neon.tech/">here</a>
@@ -14,14 +14,14 @@ Check out the docs and test the site live at: <a href="https://sleepy-woodpecker
 5. go into the src folder using `cd src`
 6. start the server using `uvicorn main:app --host 0.0.0.0 --port 3003`
 
-## Setup instructions (Using Docker)
+### Setup instructions (Using Docker)
 
-1. 1. using `.env.sample`, fill in the environment variables
+1. using `.env.sample`, fill in the environment variables
    - you can get a free postgres instance <a href="https://neon.tech/">here</a>
 2. ensure that docker is open on your device
 3. run `docker compose up --build`
 
-## Explanation of decisions
+### Explanation of decisions
 
 1. Python makes the most sense to me, because it has great support for data analysis and processing with libraries like pandas -- something which may be required in a future update to this web service
 2. FastAPI as my backend service because it supports input validation and has auto-generated documetation for its endpoints
@@ -39,7 +39,7 @@ Check out the docs and test the site live at: <a href="https://sleepy-woodpecker
 6. Further normalize the table to store raw grades only
    - enables greater flexibility for grade to GPA range in the future to support curving (I know too well)
 
-## In creating this backend service, here are the assumptions I have made:
+### In creating this backend service, here are the assumptions I have made:
 
 1. Semester start and end times:
    - Sem 1: Aug 1 to Nov 1
