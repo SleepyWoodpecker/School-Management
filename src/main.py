@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI):
     yield ()
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, root_path="/api/v1")
 
 student_db = StudentDB()
 
