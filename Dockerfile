@@ -10,4 +10,4 @@ COPY ./src ./src
 
 WORKDIR /src
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3003"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3003", "--root-path", "/api/v1"]
