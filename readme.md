@@ -16,7 +16,7 @@
 
 ### Setup instructions (Using Docker)
 
-1. 1. using `.env.sample`, fill in the environment variables
+1. using `.env.sample`, fill in the environment variables
    - you can get a free postgres instance <a href="https://neon.tech/">here</a>
 2. ensure that docker is open on your device
 3. run `docker compose up --build`
