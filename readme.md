@@ -50,4 +50,4 @@
 
 ### DB Diagram
 
-![DB-Diagram For School Management](assets/db-diagram.png)
+![DB-Diagram For School Management](assets/db-diagram.png?)
