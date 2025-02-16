@@ -117,7 +117,11 @@ app.add_exception_handler(
 
 @app.get("/ping", status_code=status.HTTP_200_OK)
 def pong(request: Request) -> PingResponse:
-    return {"pong": True, "database_connected": request.app.state.db_connected}
+    return {
+        "ok": True,
+        "pong": True,
+        "database_connected": request.app.state.db_connected,
+    }
 
 
 @app.get(
